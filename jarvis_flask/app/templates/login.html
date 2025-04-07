@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #00c6ff;
+            text-shadow: 0 0 30px rgba(0, 198, 255, 0.8);
+            margin-bottom: 20px;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0px 0px 20px rgba(0, 198, 255, 0.3);
+            width: 90%;
+            max-width: 350px;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-form label {
+            font-weight: bold;
+            text-align: left;
+            color: #ddd;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-align: left;
+            outline: none;
+        }
+        .login-form input::placeholder {
+            color: #ccc;
+        }
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        #toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #ddd;
+            font-size: 1.2rem;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #0062ff, #00c6ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .login-form button:hover {
+            background: linear-gradient(90deg, #004fcc, #0099dd);
+        }
+        .login-form p a {
+            color: #00c6ff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        footer {
+            font-size: 0.8rem;
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <p class="title">Jarvis</p>
+    <div class="login-container">
+        <h1 style="color: #00c6ff; margin-bottom: 20px;">Login</h1>
+        <form method="POST" action="{{ url_for('login') }}" class="login-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="width: 100%;">
+                <label for="username">Username</label>
+                <input type="text" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="password-wrapper">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <span id="toggle-password" onclick="togglePasswordVisibility()">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+            </div>
+
+            <!-- Display error messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="color: #ff4d4d; font-size: 0.9rem; margin-top: 10px;">
+                    {% for category, message in messages %}
+                        {% if category == 'danger' %}
+                            {{ message }}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+
+            <button type="submit">Login</button>
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+        </form>
+    </div>
+    <footer>
+        © 2025 Jarvis. All rights reserved.
+    </footer>
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggle-password').querySelector('i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

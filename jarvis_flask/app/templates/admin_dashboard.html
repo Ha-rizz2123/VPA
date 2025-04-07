@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block header %}
+<div style="position: relative; text-align: right; padding: 10px 20px;">
+    <a href="{{ url_for('logout') }}" style="padding: 10px 15px; background: linear-gradient(90deg, #ff4d4d, #ff0000); color: white; text-decoration: none; font-size: 0.9rem; font-weight: bold; border-radius: 5px; box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.3); transition: 0.3s;">
+        Logout
+    </a>
+    <a href="{{ url_for('dashboard') }}" style="padding: 10px 15px; background: linear-gradient(90deg, #00c6ff, #0072ff); color: white; text-decoration: none; font-size: 0.9rem; font-weight: bold; border-radius: 5px; box-shadow: 0px 4px 10px rgba(0, 198, 255, 0.3); transition: 0.3s; margin-left: 10px;">
+        User Dashboard
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-container" style="background: radial-gradient(circle at top, #1a1a2e, #0f0f1b); color: white; padding: 40px; border-radius: 15px; box-shadow: 0px 0px 30px rgba(0, 212, 255, 0.4);">
+    <h1 class="text-4xl font-bold text-center mb-6" style="color: #00d4ff; text-shadow: 0 0 25px rgba(0, 212, 255, 0.8), 0 0 50px rgba(0, 212, 255, 0.5);">Admin Dashboard</h1>
+
+    <!-- User Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden;">
+        <thead style="background: #00d4ff; color: white;">
+            <tr>
+                <th style="padding: 12px; text-align: left;">ID</th>
+                <th style="padding: 12px; text-align: left;">Username</th>
+                <th style="padding: 12px; text-align: left;">Email</th>
+                <th style="padding: 12px; text-align: left;">Role</th>
+                <th style="padding: 12px; text-align: left;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr style="background: rgba(255, 255, 255, 0.05); transition: background 0.3s;">
+                <td style="padding: 12px; border-bottom: 1px solid #444;">{{ user.id }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #444;">{{ user.username }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #444;">{{ user.email }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #444;">
+                    {% if user.role == 'admin' %}
+                        <span style="color: #00d4ff; font-weight: bold;">Admin</span>
+                    {% else %}
+                        <span style="color: #aaa;">User</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 12px; border-bottom: 1px solid #444;">
+                    {% if user.role != 'admin' %}
+                        <form action="{{ url_for('promote_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button style="padding: 10px 15px; background: linear-gradient(90deg, #0072ff, #00c6ff); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s;">Promote</button>
+                        </form>
+                    {% endif %}
+                    {% if user.role == 'admin' %}
+                        <form action="{{ url_for('demote_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button style="padding: 10px 15px; background: linear-gradient(90deg, #ff9800, #ff5722); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s;">Demote</button>
+                        </form>
+                    {% endif %}
+                    {% if user.username != current_user %}
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button style="padding: 10px 15px; background: linear-gradient(90deg, #ff4d4d, #ff0000); color: white; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s;">Delete</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- System Logs -->
+    <h2 style="color: #00d4ff; margin: 30px 0 15px 0;">System Logs</h2>
+    <div style="max-height: 400px; overflow-y: auto; background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: #00d4ff; color: white; position: sticky; top: 0;">
+                <tr>
+                    <th style="padding: 12px; text-align: left;">ID</th>
+                    <th style="padding: 12px; text-align: left;">Username</th>
+                    <th style="padding: 12px; text-align: left;">Action</th>
+                    <th style="padding: 12px; text-align: left;">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr style="background: rgba(255, 255, 255, 0.05); transition: background 0.3s;">
+                    <td style="padding: 12px; border-bottom: 1px solid #444;">{{ log.id }}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444;">{{ log.username }}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444;">{{ log.action }}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #444;">{{ log.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
