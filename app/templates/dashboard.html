@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-8 text-center">
+    <h1 class="text-3xl font-bold text-blue-500">Welcome, {{ current_user.username }}!</h1>
+    <p class="text-lg text-gray-600 mt-4">You are successfully logged in.</p>
+    <a href="{{ url_for('main.logout') }}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mt-6 inline-block">Logout</a>
+</div>
+{% endblock %}

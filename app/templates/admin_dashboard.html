@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-8">
+    <h1 class="text-3xl font-bold text-center mb-6">Admin Dashboard</h1>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="bg-{{ 'green-500' if category == 'success' else 'red-500' }} text-white p-4 rounded mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <table class="table-auto w-full border-collapse border border-gray-300">
+        <thead class="bg-blue-600 text-white">
+            <tr>
+                <th class="border border-gray-300 px-4 py-2">ID</th>
+                <th class="border border-gray-300 px-4 py-2">Username</th>
+                <th class="border border-gray-300 px-4 py-2">Email</th>
+                <th class="border border-gray-300 px-4 py-2">Role</th>
+                <th class="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users.items %}
+            <tr class="bg-gray-100 hover:bg-gray-200">
+                <td class="border border-gray-300 px-4 py-2">{{ user.id }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.username }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.email }}</td>
+                <td class="border border-gray-300 px-4 py-2">
+                    {% if user.role == 'admin' %}
+                        <span class="bg-green-500 text-white px-2 py-1 rounded">Admin</span>
+                    {% else %}
+                        <span class="bg-gray-500 text-white px-2 py-1 rounded">User</span>
+                    {% endif %}
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                    <div class="flex space-x-2">
+                        {% if user.role != 'admin' %}
+                            <form action="{{ url_for('main.promote_user', user_id=user.id) }}" method="POST">
+                                {{ csrf_token() }}
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Promote</button>
+                            </form>
+                        {% endif %}
+                        {% if user.role == 'admin' %}
+                            <form action="{{ url_for('main.demote_user', user_id=user.id) }}" method="POST">
+                                {{ csrf_token() }}
+                                <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Demote</button>
+                            </form>
+                        {% endif %}
+                        {% if user.id != current_user.id %}
+                            <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="POST">
+                                {{ csrf_token() }}
+                                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flex justify-between mt-6">
+        <a href="{{ url_for('main.dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Back to Dashboard</a>
+        <a href="{{ url_for('main.logout') }}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</a>
+    </div>
+</div>
+{% endblock %}
